@@ -2,3 +2,6 @@
 # HTML viewer reproduces the flythrough). Track with Git LFS if you need them.
 *.mov
 *.mp4
+
+# macOS
+.DS_Store
