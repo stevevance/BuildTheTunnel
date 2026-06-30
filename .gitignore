@@ -1,0 +1,4 @@
+# Large rendered video artifacts (exceed GitHub's file-size limits; the live
+# HTML viewer reproduces the flythrough). Track with Git LFS if you need them.
+*.mov
+*.mp4
