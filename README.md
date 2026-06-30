@@ -113,7 +113,6 @@ OpenStreetMap."**
 |------|---------|
 | `index.html` | The viewer (data embedded inline). |
 | `crcl_geo.json` | Finalized geometry: camera `path`, drawn `line`, and `stations`. |
-| `CRCL_3D_FLYTHROUGH_HANDOFF.md` | Build/handoff notes and backlog. |
 
 Rendered video files (`*.mp4`, `*.mov`) are gitignored — they exceed GitHub's
 file-size limits and the live viewer reproduces the flythrough.
