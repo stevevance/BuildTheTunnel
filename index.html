@@ -28,7 +28,7 @@
      background:rgba(255,255,255,.92);padding:11px 13px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.2);display:none}
  #info2 p{margin:0 0 7px}
  #info2 p.stat{font-size:11px;color:#555;border-top:1px solid rgba(0,0,0,.12);padding-top:6px}
- #info2 a{color:var(--accent);font-weight:600;text-decoration:none}
+ #info2 a{display:block;margin-top:3px;color:var(--accent);font-weight:600;text-decoration:none}
  #info2 a:hover{text-decoration:underline}
  /* station info callout (a MapLibre popup styled as a pointer label) */
  .callout .maplibregl-popup-content{background:var(--accent);color:#fff;font:13px system-ui;
@@ -43,6 +43,9 @@
  .callout .zoning .zh{font-size:10px;text-transform:uppercase;letter-spacing:.04em;opacity:.8;margin-bottom:2px}
  .callout .zoning .zrow{font-size:12px;line-height:1.45;display:flex;justify-content:space-between;gap:12px}
  .callout .zoning .zrow .v{font-weight:700}
+ .callout .walk{margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.35)}
+ .callout .walk .wv{font-size:18px;font-weight:800;line-height:1.1}
+ .callout .walk .wl{font-size:10px;opacity:.85;text-transform:uppercase;letter-spacing:.03em}
  .callout.maplibregl-popup-anchor-bottom .maplibregl-popup-tip{border-top-color:var(--accent)}
  .callout.maplibregl-popup-anchor-top .maplibregl-popup-tip{border-bottom-color:var(--accent)}
  /* non-dwell annotation callout (teal) */
@@ -58,11 +61,18 @@
   <div id="sub" style="margin-top:1px;font-size:12px;color:#555">Chicago &middot; 3D flythrough</div>
   <label>Line
     <select id="lineSel">
-      <option value="crcl">Chicago &mdash; Clinton&ndash;Roosevelt Connector</option>
-      <option value="rle">Chicago &mdash; Red Line Extension (95th&ndash;130th)</option>
-      <option value="toulouse">Toulouse &mdash; Ligne C (Line 3)</option>
-      <option value="austin">Austin &mdash; Light Rail (Project Connect)</option>
-      <option value="hamburg">Hamburg &mdash; U5</option>
+      <optgroup label="North America">
+        <option value="crcl">Chicago &mdash; Clinton&ndash;Roosevelt Connector</option>
+        <option value="rle">Chicago &mdash; Red Line Extension (95th&ndash;130th)</option>
+        <option value="austin">Austin &mdash; Light Rail (Project Connect)</option>
+      </optgroup>
+      <optgroup label="South America">
+        <option value="bogota">Bogot&aacute; &mdash; Metro L&iacute;nea 1</option>
+      </optgroup>
+      <optgroup label="Europe">
+        <option value="toulouse">Toulouse &mdash; Ligne C (Line 3)</option>
+        <option value="hamburg">Hamburg &mdash; U5</option>
+      </optgroup>
     </select>
   </label>
   <label>Pitch <input id="pitch" type="range" min="0" max="80" value="62"></label>
@@ -164,6 +174,8 @@ function showCallout(st){
   } else {
     html = '<div class="ttl">'+(st.name_local||st.name)+'</div>';
     if(st.name_local && st.name_local!==st.name) html += '<div class="sub">'+st.name+'</div>';
+    if(st.walkPop!=null) html += '<div class="walk"><div class="wv">'+st.walkPop.toLocaleString()+'</div>'
+      + '<div class="wl">residents within a &frac12;-mile walk</div></div>';
   }
   callout.setLngLat(st.lonlat).setHTML(html).addTo(map);
 }
@@ -343,9 +355,14 @@ function loadLine(key){
 
   // secondary lower-left info box (only lines that define `info`)
   const i2=document.getElementById('info2');
-  if(L.info){ i2.innerHTML='<p><b>'+L.info.title+'</b></p><p>'+L.info.text+'</p>'
+  if(L.info){
+    // links: either an array of {url,text} or a single url/urlText pair
+    const links = L.info.links || (L.info.url ? [{url:L.info.url,text:L.info.urlText}] : []);
+    i2.innerHTML='<p><b>'+L.info.title+'</b></p><p>'+L.info.text+'</p>'
       +(L.info.stat?'<p class="stat">'+L.info.stat+'</p>':'')
-      +'<a href="'+L.info.url+'" target="_blank" rel="noopener">'+L.info.urlText+'</a>'; i2.style.display='block'; }
+      +links.map(l=>'<a href="'+l.url+'" target="_blank" rel="noopener">'+l.text+'</a>').join('');
+    i2.style.display='block';
+  }
   else i2.style.display='none';
 
   // legend for a context overlay (e.g. existing rail)

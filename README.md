@@ -12,6 +12,7 @@ Four lines are selectable, each directly linkable via a URL hash:
 | **Chicago — Red Line Extension (95th–130th)** | under construction | [`#rle`](https://stevevance.github.io/buildthetunnel/#rle) |
 | **Toulouse — Ligne C (Line 3)** | under construction | [`#toulouse`](https://stevevance.github.io/buildthetunnel/#toulouse) |
 | **Austin — Light Rail (Project Connect)** | planned | [`#austin`](https://stevevance.github.io/buildthetunnel/#austin) |
+| **Bogotá — Metro Línea 1** | under construction | [`#bogota`](https://stevevance.github.io/buildthetunnel/#bogota) |
 | **Hamburg — U5** | under construction / planned | [`#hamburg`](https://stevevance.github.io/buildthetunnel/#hamburg) |
 
 The viewer is `index.html` plus `lines.js` (the line datasets). It runs straight
@@ -74,7 +75,7 @@ branch to Yellow Jacket, with an on-screen banner announcing each leg.
   hand-drawn connector at the north end — paralleling I-57 out of 95th/Dan Ryan —
   and the UP→South Shore crossover near 115th are approximated. Densified to ~18 m
   spacing. The flythrough runs **south→north**, starting at the 130th terminal.
-- **Toulouse, Austin, and Hamburg** alignments and stations — and the existing
+- **Toulouse, Austin, Bogotá, and Hamburg** alignments and stations — and the existing
   **Metra** and **MetroRail** context overlays — come from **Transit Explorer**,
   the interactive transit map by **[The Transport Politic](https://www.thetransportpolitic.com/)**
   (Yonah Freemark): <https://www.transitexplorer.com/>. They are pulled from the
@@ -100,6 +101,21 @@ spans four tracts on a boundary); RLE sums across every 2020 tract within a
 half-mile of the station point; Austin uses each station's containing 2020 tract
 (all 15 are in Travis County). Non-U.S. lines (Toulouse, Hamburg) show
 name-only callouts. All statistics are precomputed and embedded in `lines.js`.
+
+**Walkshed population (Bogotá).** Each Bogotá Línea 1 station callout shows the
+**residents within a ½-mile (804 m) walk**. The walkshed is a foot-walking
+isochrone (`range_type=distance`, `range=804 m`) from **OpenRouteService**
+(`/v2/isochrones/foot-walking`), and the population is ORS's `total_pop`
+attribute, which it computes from the European Commission's **GHS-POP** global
+population grid — the same OpenRouteService + GHS-POP method Chicago Cityscape
+uses for its station walksheds. A few station points sit on the elevated
+alignment where the pedestrian network is disconnected (collapsing the
+isochrone); those were nudged ~60 m to the nearest walkable street so the
+walkshed reflects the surrounding neighborhood (the displayed station marker
+stays on the line). Because 804 m is measured along the street network (reaching
+~600–700 m in straight-line terms) and the closest stations are ~965 m apart,
+adjacent walksheds still overlap slightly, so the per-station figures should not
+be summed.
 
 **Zoning (RLE only).** Each RLE station callout also lists the **top three
 `zone_class` values by land area within a half-mile**, computed in PostGIS
