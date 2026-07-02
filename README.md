@@ -9,6 +9,7 @@ Four lines are selectable, each directly linkable via a URL hash:
 | Line | Status | Permalink |
 |------|--------|-----------|
 | **Chicago — Clinton–Roosevelt Connector (CRCL)** | proposed | [`#crcl`](https://stevevance.github.io/buildthetunnel/#crcl) |
+| **Chicago — Red Line Extension (95th–130th)** | under construction | [`#rle`](https://stevevance.github.io/buildthetunnel/#rle) |
 | **Toulouse — Ligne C (Line 3)** | under construction | [`#toulouse`](https://stevevance.github.io/buildthetunnel/#toulouse) |
 | **Austin — Light Rail (Project Connect)** | planned | [`#austin`](https://stevevance.github.io/buildthetunnel/#austin) |
 | **Hamburg — U5** | under construction / planned | [`#hamburg`](https://stevevance.github.io/buildthetunnel/#hamburg) |
@@ -63,6 +64,16 @@ branch to Yellow Jacket, with an on-screen banner announcing each leg.
   (`b_crosstowner_lines` / `b_crosstowner_stations`). Processed in QGIS: reproject
   to EPSG:3435, Chaikin-smooth (4 iterations), resample to ~25 ft spacing (670
   points), reproject back to EPSG:4326.
+- **RLE** (Red Line Extension) station points were geocoded from the CTA
+  project's published locations (103rd, 111th, Michigan, 130th) plus the existing
+  95th/Dan Ryan terminal via the U.S. Census geocoder, then snapped onto the
+  corridor. The alignment traces two real rail rights-of-way pulled from
+  **OpenStreetMap**: the **Union Pacific "Villa Grove Subdivision"** from ~99th
+  Street south to Michigan Avenue, then the **NICTD South Shore Line** southeast
+  to the 130th Street terminal (placed on that corridor at 130th). Only a short
+  hand-drawn connector at the north end — paralleling I-57 out of 95th/Dan Ryan —
+  and the UP→South Shore crossover near 115th are approximated. Densified to ~18 m
+  spacing. The flythrough runs **south→north**, starting at the 130th terminal.
 - **Toulouse, Austin, and Hamburg** alignments and stations — and the existing
   **Metra** and **MetroRail** context overlays — come from **Transit Explorer**,
   the interactive transit map by **[The Transport Politic](https://www.thetransportpolitic.com/)**
@@ -72,22 +83,29 @@ branch to Yellow Jacket, with an on-screen banner announcing each leg.
   then, per line, the drawn alignment is simplified into a smooth camera `path`
   and each station is projected to its along-track position.
 
-### Station statistics (U.S. lines: CRCL and Austin)
+### Station statistics (U.S. lines: CRCL, RLE, and Austin)
 For each station, figures are taken from its 2020 Census tract(s):
 
 - **Jobs (workplace)** — total jobs (`C000`) from the U.S. Census Bureau **LEHD
   LODES8 Workplace Area Characteristics (WAC)**, vintage **2023**
-  (`il_wac_S000_JT00_2023` for CRCL, `tx_wac_S000_JT00_2023` for Austin), block
-  counts aggregated to tracts.
+  (`il_wac_S000_JT00_2023` for CRCL and RLE, `tx_wac_S000_JT00_2023` for Austin),
+  block counts aggregated to tracts.
 - **Households** — ACS table **B11001** (`B11001_001`), **ACS 2024 5-year**, via
-  the [Census Reporter](https://censusreporter.org/) API.
+  the [Census Reporter](https://censusreporter.org/) API (RLE via the Census Data API).
 - **Residents** — ACS table **B01003** (`B01003_001`), **ACS 2024 5-year**, via
-  Census Reporter.
+  Census Reporter (RLE via the Census Data API).
 
 CRCL sums across every 2020 tract within 50 ft of the station point (Roosevelt
-spans four tracts on a boundary); Austin uses each station's containing 2020 tract
+spans four tracts on a boundary); RLE sums across every 2020 tract within a
+half-mile of the station point; Austin uses each station's containing 2020 tract
 (all 15 are in Travis County). Non-U.S. lines (Toulouse, Hamburg) show
 name-only callouts. All statistics are precomputed and embedded in `lines.js`.
+
+**Zoning (RLE only).** Each RLE station callout also lists the **top three
+`zone_class` values by land area within a half-mile**, computed in PostGIS
+against the latest Chicago Cityscape zoning snapshot (`zoning_20260514_144516`,
+EPSG:3435): a 2,640-ft buffer intersected with the zoning polygons, area summed
+per class, shown as a percentage of the buffer's total zoned area.
 
 > **Vintage note:** jobs are LODES 2023 while households/residents are ACS
 > 2020–2024 — close but not the same reference year.

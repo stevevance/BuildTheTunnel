@@ -27,6 +27,7 @@
  #info2{position:absolute;left:12px;bottom:12px;z-index:5;max-width:300px;font:13px system-ui;line-height:1.4;
      background:rgba(255,255,255,.92);padding:11px 13px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.2);display:none}
  #info2 p{margin:0 0 7px}
+ #info2 p.stat{font-size:11px;color:#555;border-top:1px solid rgba(0,0,0,.12);padding-top:6px}
  #info2 a{color:var(--accent);font-weight:600;text-decoration:none}
  #info2 a:hover{text-decoration:underline}
  /* station info callout (a MapLibre popup styled as a pointer label) */
@@ -35,9 +36,13 @@
  .callout .ttl{font-weight:700;font-size:14px;margin-bottom:3px}
  .callout .sub{font-size:11px;opacity:.8;margin-top:2px}
  /* census stats: left-aligned "Label: value", label and value the same size */
- .callout .census{text-align:left}
+ .callout .census{text-align:left;white-space:normal;max-width:250px}
  .callout .census .row{font-size:13px;line-height:1.5}
  .callout .census .v{font-weight:700;margin-left:4px}
+ .callout .zoning{margin-top:6px;padding-top:5px;border-top:1px solid rgba(255,255,255,.3)}
+ .callout .zoning .zh{font-size:10px;text-transform:uppercase;letter-spacing:.04em;opacity:.8;margin-bottom:2px}
+ .callout .zoning .zrow{font-size:12px;line-height:1.45;display:flex;justify-content:space-between;gap:12px}
+ .callout .zoning .zrow .v{font-weight:700}
  .callout.maplibregl-popup-anchor-bottom .maplibregl-popup-tip{border-top-color:var(--accent)}
  .callout.maplibregl-popup-anchor-top .maplibregl-popup-tip{border-bottom-color:var(--accent)}
  /* non-dwell annotation callout (teal) */
@@ -54,6 +59,7 @@
   <label>Line
     <select id="lineSel">
       <option value="crcl">Chicago &mdash; Clinton&ndash;Roosevelt Connector</option>
+      <option value="rle">Chicago &mdash; Red Line Extension (95th&ndash;130th)</option>
       <option value="toulouse">Toulouse &mdash; Ligne C (Line 3)</option>
       <option value="austin">Austin &mdash; Light Rail (Project Connect)</option>
       <option value="hamburg">Hamburg &mdash; U5</option>
@@ -148,7 +154,13 @@ function showCallout(st){
       + '<div class="row">Residents:<span class="v">'+pop+'</span></div>'
       + '<div class="row">Jobs:<span class="v">'+jobs+'</span></div>'
       + '<div class="row">Households:<span class="v">'+hh+'</span></div>'
-      + '<div class="sub">in '+(st.tractName||'this Census tract')+'</div></div>';
+      + '<div class="sub">in '+(st.tractName||'this Census tract')+'</div>';
+    if(st.zoning && st.zoning.length){
+      html += '<div class="zoning"><div class="zh">Top zoning &frac12; mi (by area)</div>'
+        + st.zoning.map(z=>'<div class="zrow"><span>'+z.zone+'</span><span class="v">'+z.pct+'%</span></div>').join('')
+        + '</div>';
+    }
+    html += '</div>';
   } else {
     html = '<div class="ttl">'+(st.name_local||st.name)+'</div>';
     if(st.name_local && st.name_local!==st.name) html += '<div class="sub">'+st.name+'</div>';
@@ -332,6 +344,7 @@ function loadLine(key){
   // secondary lower-left info box (only lines that define `info`)
   const i2=document.getElementById('info2');
   if(L.info){ i2.innerHTML='<p><b>'+L.info.title+'</b></p><p>'+L.info.text+'</p>'
+      +(L.info.stat?'<p class="stat">'+L.info.stat+'</p>':'')
       +'<a href="'+L.info.url+'" target="_blank" rel="noopener">'+L.info.urlText+'</a>'; i2.style.display='block'; }
   else i2.style.display='none';
 
